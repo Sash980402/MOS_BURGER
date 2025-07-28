@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MOS Burgers - Customers</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body style="background:linear-gradient(135deg,#f1faee 60%,#fff 100%);min-height:100vh;">
+  <header>
+    <div class="logo"><strong><i class="fa fa-burger"></i> MOS Burgers</strong></div>
+    <span id="current-user" style="color:#457b9d;font-weight:600;margin-left:1.5rem;"></span>
+    <button class="hamburger" aria-label="Open navigation" aria-controls="main-nav" aria-expanded="false"><i class="fa fa-bars"></i></button>
+    <nav id="main-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="menu.html">Menu</a>
+      <a href="cart.html">Cart</a>
+      <a href="customers.html" class="active">Customers</a>
+      <a href="reports.html">Reports</a>
+      <a href="login.html" id="login-link">Login</a>
+      <a href="#" id="logout-link" style="display:none;">Logout</a>
+      <a href="user-logins.html" id="user-logins-link" style="display:none;">User Login Report</a>
+      <a href="register.html" id="register-user-link" style="display:none;">Register User</a>
+    </nav>
+  </header>
+  <div class="container" style="background:rgba(255,255,255,0.98);box-shadow:0 8px 32px rgba(69,123,157,0.10);border-radius:22px;max-width:1200px;">
+    <div id="customer-header" style="background:linear-gradient(90deg,#e63946 60%,#ffb3c1 100%);border-radius:18px 18px 0 0;padding:2.2rem 2.5rem 1.2rem 2.5rem;margin:-2rem -2rem 2rem -2rem;box-shadow:0 2px 8px rgba(230,57,70,0.10);color:#fff;text-align:left;position:relative;">
+      <h1 style="margin:0;font-size:2.3rem;letter-spacing:0.5px;"><i class="fa fa-users"></i> Customers</h1>
+      <div id="customer-stats" style="display:flex;gap:2.5rem;margin-top:1.2rem;flex-wrap:wrap;">
+        <div style="font-size:1.1rem;"><i class="fa fa-user-group"></i> <b id="stat-total">0</b> Total</div>
+        <div style="font-size:1.1rem;"><i class="fa fa-star"></i> <b id="stat-vip">0</b> VIP</div>
+        <div style="font-size:1.1rem;"><i class="fa fa-user-plus"></i> <b id="stat-new">0</b> New this month</div>
+        <div style="font-size:1.1rem;"><i class="fa fa-crown"></i> <b id="stat-top">-</b> Top Customer</div>
+      </div>
+      <button id="add-customer-btn" class="button" style="position:absolute;top:2.2rem;right:2.5rem;background:linear-gradient(135deg,#fff 0%,#e63946 100%);color:#e63946;font-weight:700;font-size:1.1rem;padding:0.8rem 2.2rem;border-radius:30px;box-shadow:0 2px 8px rgba(230,57,70,0.15);"><i class="fa fa-plus"></i> Add Customer</button>
+    </div>
+    <div id="customer-searchbar" style="display:flex;align-items:center;gap:0.7rem;margin-bottom:2rem;margin-top:-1.5rem;position:sticky;top:90px;z-index:2;background:rgba(255,255,255,0.85);backdrop-filter:blur(6px);border-radius:14px;box-shadow:0 2px 8px rgba(69,123,157,0.07);padding:1rem 1.5rem;">
+      <span style="font-size:1.2rem;color:#457b9d;"><i class="fa fa-search"></i></span>
+      <input id="customer-search" type="text" placeholder="Search customers..." style="width:100%;padding:0.7rem 1.2rem;border-radius:8px;border:1px solid #ccc;font-size:1.08rem;">
+      <select id="customer-filter" style="border-radius:8px;padding:0.7rem 1.2rem;font-size:1.08rem;border:1px solid #ccc;">
+        <option value="">All</option>
+        <option value="vip">VIP</option>
+        <option value="new">New</option>
+      </select>
+    </div>
+    <div id="customer-cards-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:2.2rem 2.2rem;min-height:220px;margin-bottom:2.5rem;">
+    </div>
+    <div id="customer-empty-state" style="display:none;text-align:center;padding:3.5rem 1rem;color:#999;font-size:1.3rem;">
+      <i class="fa fa-users" style="font-size:4rem;margin-bottom:1rem;opacity:0.3;"></i>
+      <br>
+      No customers found. Add your first customer!
+    </div>
+    <div id="customer-profile-modal" style="display:none;"></div>
+    <div id="customer-form-modal" style="display:none;"></div>
+  </div>
+  <script src="assets/js/main.js"></script>
+  <script>
+    const hamburger = document.querySelector('.hamburger');
+    const nav = document.getElementById('main-nav');
+    hamburger.addEventListener('click', () => {
+      nav.classList.toggle('open');
+      document.body.classList.toggle('nav-open');
+      hamburger.setAttribute('aria-expanded', nav.classList.contains('open'));
+    });
+    window.addEventListener('resize', () => {
+      if(window.innerWidth > 700) {
+        nav.classList.remove('open');
+        document.body.classList.remove('nav-open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      }
+    });
+    document.addEventListener('keydown', e => {
+      if(e.key === 'Escape') {
+        nav.classList.remove('open');
+        document.body.classList.remove('nav-open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    function updateAuthLinks() {
+      const isLoggedIn = localStorage.getItem('loggedInUser');
+      document.getElementById('login-link').style.display = isLoggedIn ? 'none' : '';
+      document.getElementById('logout-link').style.display = isLoggedIn ? '' : 'none';
+      const userSpan = document.getElementById('current-user');
+      if (userSpan) {
+        userSpan.textContent = isLoggedIn ? `Logged in as: ${isLoggedIn}` : '';
+      }
+      const regLink = document.getElementById('register-user-link');
+      if (regLink) {
+        regLink.style.display = isLoggedIn === 'admin' ? '' : 'none';
+      }
+      const loginsLink = document.getElementById('user-logins-link');
+      if (loginsLink) {
+        loginsLink.style.display = isLoggedIn === 'admin' ? '' : 'none';
+      }
+    }
+
+    document.getElementById('logout-link').onclick = function() {
+      const username = localStorage.getItem('loggedInUser');
+      if (username) {
+        let logs = JSON.parse(localStorage.getItem('userLogs') || '[]');
+        const lastLog = logs.find(log => log.username === username && !log.logout);
+        if (lastLog) {
+          lastLog.logout = new Date().toISOString();
+          localStorage.setItem('userLogs', JSON.stringify(logs));
+        }
+      }
+      localStorage.removeItem('loggedInUser');
+      updateAuthLinks();
+      location.reload();
+    };
+
+    updateAuthLinks();
+
+    document.addEventListener('DOMContentLoaded', function() {
+      renderCustomerCards();
+      renderCustomerStats();
+    });
+  </script>
+</body>
+</html> 

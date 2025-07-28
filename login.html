@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - MOS Burgers</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { background: linear-gradient(135deg,#f1faee 60%,#fff 100%); min-height: 100vh; }
+    .login-container {
+      max-width: 400px;
+      margin: 4rem auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(69,123,157,0.13);
+      padding: 2.5rem 2rem 2rem 2rem;
+      text-align: center;
+    }
+    .login-container h1 {
+      color: #e63946;
+      margin-bottom: 1.5rem;
+      font-size: 2rem;
+    }
+    .login-container label {
+      display: block;
+      text-align: left;
+      margin-bottom: 0.3rem;
+      color: #457b9d;
+      font-weight: 600;
+    }
+    .login-container input[type="text"],
+    .login-container input[type="password"] {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      margin-bottom: 1.2rem;
+      border-radius: 8px;
+      border: 1.5px solid #ccc;
+      font-size: 1.08rem;
+      font-family: inherit;
+      background: #f8f9fa;
+      transition: border 0.2s;
+    }
+    .login-container input:focus {
+      border-color: #e63946;
+      outline: none;
+    }
+    .login-btn {
+      width: 100%;
+      background: linear-gradient(135deg,#e63946 0%,#457b9d 100%);
+      color: #fff;
+      border: none;
+      border-radius: 30px;
+      padding: 0.9rem 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 1.2rem;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .login-btn:hover {
+      background: linear-gradient(135deg,#457b9d 0%,#e63946 100%);
+      transform: translateY(-2px) scale(1.03);
+    }
+    .forgot-link {
+      color: #457b9d;
+      text-decoration: underline;
+      font-size: 1rem;
+      cursor: pointer;
+      display: block;
+      margin-bottom: 1.2rem;
+    }
+    .error-msg {
+      color: #e63946;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      font-size: 1.05rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1><i class="fa fa-user-circle"></i> User Login</h1>
+    <form id="login-form">
+      <label for="username">Username</label>
+      <input type="text" id="username" required autocomplete="username">
+      <label for="password">Password</label>
+      <input type="password" id="password" required autocomplete="current-password">
+      <button type="submit" class="login-btn">Login</button>
+      <a href="reset-password.html" class="forgot-link">Forgot Password?</a>
+      <div class="error-msg" id="login-error" style="display:none;"></div>
+    </form>
+    <a href="register.html" class="forgot-link" style="margin-top:0.5rem;">Register</a>
+  </div>
+  <script>
+    const users = JSON.parse(localStorage.getItem('users') || 'null') || [
+      { username: 'admin', password: 'admin123' },
+      { username: 'staff', password: 'staff123' }
+    ];
+    localStorage.setItem('users', JSON.stringify(users));
+
+    document.getElementById('login-form').onsubmit = function(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const user = users.find(u => u.username === username && u.password === password);
+      if (user) {
+        const now = new Date().toISOString();
+        localStorage.setItem('loggedInUser', username);
+        let logs = JSON.parse(localStorage.getItem('userLogs') || '[]');
+        logs.push({ username, login: now, logout: null });
+        localStorage.setItem('userLogs', JSON.stringify(logs));
+        window.location.href = 'index.html';
+      } else {
+        document.getElementById('login-error').textContent = 'Invalid username or password.';
+        document.getElementById('login-error').style.display = '';
+      }
+    };
+  </script>
+</body>
+</html> 

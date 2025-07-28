@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MOS Burgers - Home</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .hero {
+      position: relative;
+      width: 100%;
+      min-height: 60vh;
+      background: linear-gradient(135deg, rgba(230,57,70,0.85) 0%, rgba(69,123,157,0.7) 100%), url('https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0 0 32px 32px;
+      box-shadow: 0 8px 32px rgba(69,123,157,0.13);
+      margin-bottom: 2.5rem;
+    }
+    .hero-content {
+      color: #fff;
+      text-align: center;
+      z-index: 2;
+      padding: 3rem 2rem;
+      background: rgba(29,53,87,0.45);
+      border-radius: 18px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    .hero-content h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      letter-spacing: 1px;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.13);
+    }
+    .hero-content p {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+      color: #f1faee;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.10);
+    }
+    .hero-content .cta-btn {
+      background: linear-gradient(135deg,#e63946 0%,#457b9d 100%);
+      color: #fff;
+      border: none;
+      border-radius: 30px;
+      padding: 1rem 2.5rem;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(230,57,70,0.13);
+      transition: background 0.2s, transform 0.1s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .hero-content .cta-btn:hover {
+      background: linear-gradient(135deg,#457b9d 0%,#e63946 100%);
+      transform: translateY(-2px) scale(1.04);
+    }
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2.5rem;
+      justify-content: center;
+      margin: 0 auto 3rem auto;
+      max-width: 1100px;
+    }
+    .feature-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(69,123,157,0.10);
+      padding: 2rem 1.5rem;
+      flex: 1 1 260px;
+      min-width: 240px;
+      max-width: 320px;
+      text-align: center;
+      transition: box-shadow 0.2s, transform 0.1s;
+    }
+    .feature-card:hover {
+      box-shadow: 0 8px 32px rgba(230,57,70,0.13);
+      transform: translateY(-4px) scale(1.03);
+    }
+    .feature-card i {
+      font-size: 2.2rem;
+      color: #e63946;
+      margin-bottom: 1rem;
+    }
+    .feature-card h3 {
+      color: #457b9d;
+      margin-bottom: 0.7rem;
+      font-size: 1.3rem;
+    }
+    .feature-card p {
+      color: #555;
+      font-size: 1.05rem;
+    }
+    @media (max-width: 700px) {
+      .hero-content h1 { font-size: 2rem; }
+      .features { flex-direction: column; gap: 1.5rem; }
+      .feature-card { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"><strong>MOS Burgers</strong></div>
+    <span id="current-user" style="color:#457b9d;font-weight:600;margin-left:1.5rem;"></span>
+    <button class="hamburger" aria-label="Open navigation" aria-controls="main-nav" aria-expanded="false"><i class="fa fa-bars"></i></button>
+    <nav id="main-nav" aria-label="Main navigation">
+      <a href="index.html" class="active">Home</a>
+      <a href="menu.html">Menu</a>
+      <a href="cart.html">Cart</a>
+      <a href="customers.html">Customers</a>
+      <a href="reports.html">Reports</a>
+      <a href="login.html" id="login-link">Login</a>
+      <a href="#" id="logout-link" style="display:none;">Logout</a>
+      <a href="user-logins.html" id="user-logins-link" style="display:none;">User Login Report</a>
+      <a href="register.html" id="register-user-link" style="display:none;">Register User</a>
+    </nav>
+  </header>
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Welcome to MOS Burgers</h1>
+      <p>Your favorite place for delicious burgers, subs, and more!<br>Fresh, fast, and made with love.</p>
+      <a href="menu.html" class="cta-btn"><i class="fa fa-utensils"></i> View Menu</a>
+    </div>
+  </section>
+  <section class="features">
+    <div class="feature-card">
+      <i class="fa fa-burger"></i>
+      <h3>Premium Burgers</h3>
+      <p>Enjoy our signature burgers made with the freshest ingredients and unique recipes.</p>
+    </div>
+    <div class="feature-card">
+      <i class="fa fa-clock"></i>
+      <h3>Fast Service</h3>
+      <p>Quick and friendly service so you can enjoy your meal without the wait.</p>
+    </div>
+    <div class="feature-card">
+      <i class="fa fa-users"></i>
+      <h3>Family Friendly</h3>
+      <p>A welcoming atmosphere for friends, families, and burger lovers of all ages.</p>
+    </div>
+    <div class="feature-card">
+      <i class="fa fa-chart-line"></i>
+      <h3>Business Insights</h3>
+      <p>Track your orders, customers, and sales with our built-in reporting tools.</p>
+    </div>
+  </section>
+  <script>
+    const hamburger = document.querySelector('.hamburger');
+    const nav = document.getElementById('main-nav');
+    hamburger.addEventListener('click', () => {
+      nav.classList.toggle('open');
+      document.body.classList.toggle('nav-open');
+      hamburger.setAttribute('aria-expanded', nav.classList.contains('open'));
+    });
+    window.addEventListener('resize', () => {
+      if(window.innerWidth > 700) {
+        nav.classList.remove('open');
+        document.body.classList.remove('nav-open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      }
+    });
+    document.addEventListener('keydown', e => {
+      if(e.key === 'Escape') {
+        nav.classList.remove('open');
+        document.body.classList.remove('nav-open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      }
+    });
+    function updateAuthLinks() {
+      const isLoggedIn = localStorage.getItem('loggedInUser');
+      document.getElementById('login-link').style.display = isLoggedIn ? 'none' : '';
+      document.getElementById('logout-link').style.display = isLoggedIn ? '' : 'none';
+      const userSpan = document.getElementById('current-user');
+      if (userSpan) {
+        userSpan.textContent = isLoggedIn ? `Logged in as: ${isLoggedIn}` : '';
+      }
+      const regLink = document.getElementById('register-user-link');
+      if (regLink) {
+        regLink.style.display = isLoggedIn === 'admin' ? '' : 'none';
+      }
+      const loginsLink = document.getElementById('user-logins-link');
+      if (loginsLink) {
+        loginsLink.style.display = isLoggedIn === 'admin' ? '' : 'none';
+      }
+    }
+    document.getElementById('logout-link').onclick = function() {
+      const username = localStorage.getItem('loggedInUser');
+      if (username) {
+        let logs = JSON.parse(localStorage.getItem('userLogs') || '[]');
+        const lastLog = logs.find(log => log.username === username && !log.logout);
+        if (lastLog) {
+          lastLog.logout = new Date().toISOString();
+          localStorage.setItem('userLogs', JSON.stringify(logs));
+        }
+      }
+      localStorage.removeItem('loggedInUser');
+      updateAuthLinks();
+      location.reload();
+    };
+    updateAuthLinks();
+    if (!localStorage.getItem('users')) {
+      localStorage.setItem('users', JSON.stringify([
+        { username: 'admin', password: 'admin123' },
+        { username: 'staff', password: 'staff123' }
+      ]));
+    }
+  </script>
+</body>
+</html> 

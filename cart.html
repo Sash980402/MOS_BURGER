@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MOS Burgers - Cart</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,600,700&display=swap" rel="stylesheet">
+</head>
+<body style="background:linear-gradient(135deg,#f1faee 60%,#fff 100%);min-height:100vh;">
+
+  <header>
+    <div class="logo"><strong><i class="fa fa-burger"></i> MOS Burgers</strong></div>
+    <span id="current-user" style="color:#457b9d;font-weight:600;margin-left:1.5rem;"></span>
+    <button class="hamburger" aria-label="Open navigation" aria-controls="main-nav" aria-expanded="false"><i class="fa fa-bars"></i></button>
+    <nav id="main-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="menu.html">Menu</a>
+      <a href="cart.html" class="active">Cart</a>
+      <a href="customers.html">Customers</a>
+      <a href="reports.html">Reports</a>
+      <a href="login.html" id="login-link">Login</a>
+      <a href="#" id="logout-link" style="display:none;">Logout</a>
+      <a href="user-logins.html" id="user-logins-link" style="display:none;">User Login Report</a>
+      <a href="register.html" id="register-user-link" style="display:none;">Register User</a>
+    </nav>
+  </header>
+
+  <div class="container" style="background:rgba(255,255,255,0.98);box-shadow:0 8px 32px rgba(69,123,157,0.10);border-radius:22px;max-width:1200px;">
+    
+    <div id="cart-header" style="background:linear-gradient(90deg,#e63946 60%,#ffb3c1 100%);border-radius:18px 18px 0 0;padding:2.2rem 2.5rem 1.2rem 2.5rem;margin:-2rem -2rem 2rem -2rem;box-shadow:0 2px 8px rgba(230,57,70,0.10);color:#fff;text-align:left;">
+      <h1 style="margin:0;font-size:2.3rem;letter-spacing:0.5px;"><i class="fa fa-shopping-cart"></i> Your Cart</h1>
+      <div style="font-size:1.1rem;margin-top:0.5rem;">Review your delicious items below.</div>
+    </div>
+
+    <div id="cart-layout" style="display:grid;grid-template-columns:2fr 1fr;gap:2.5rem;align-items:flex-start;">
+      
+    
+      <div id="cart-items-column">
+        <div id="cart-items"></div>
+      </div>
+
+      <div id="order-summary-column" style="position:sticky;top:90px;">
+        <div id="order-summary"></div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="assets/js/main.js"></script>
+  <script>
+    const hamburger = document.querySelector('.hamburger');
+    const nav = document.getElementById('main-nav');
+    hamburger.addEventListener('click', () => {
+      nav.classList.toggle('open');
+      document.body.classList.toggle('nav-open');
+      hamburger.setAttribute('aria-expanded', nav.classList.contains('open'));
+    });
+    window.addEventListener('resize', () => {
+      if(window.innerWidth > 700) {
+        nav.classList.remove('open');
+        document.body.classList.remove('nav-open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      }
+    });
+    document.addEventListener('keydown', e => {
+      if(e.key === 'Escape') {
+        nav.classList.remove('open');
+        document.body.classList.remove('nav-open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    function updateAuthLinks() {
+      const isLoggedIn = localStorage.getItem('loggedInUser');
+      document.getElementById('login-link').style.display = isLoggedIn ? 'none' : '';
+      document.getElementById('logout-link').style.display = isLoggedIn ? '' : 'none';
+      const userSpan = document.getElementById('current-user');
+      if (userSpan) {
+        userSpan.textContent = isLoggedIn ? `Logged in as: ${isLoggedIn}` : '';
+      }
+      const regLink = document.getElementById('register-user-link');
+      if (regLink) {
+        regLink.style.display = isLoggedIn === 'admin' ? '' : 'none';
+      }
+      const loginsLink = document.getElementById('user-logins-link');
+      if (loginsLink) {
+        loginsLink.style.display = isLoggedIn === 'admin' ? '' : 'none';
+      }
+    }
+
+    document.getElementById('logout-link').onclick = function() {
+      const username = localStorage.getItem('loggedInUser');
+      if (username) {
+        let logs = JSON.parse(localStorage.getItem('userLogs') || '[]');
+        const lastLog = logs.find(log => log.username === username && !log.logout);
+        if (lastLog) {
+          lastLog.logout = new Date().toISOString();
+          localStorage.setItem('userLogs', JSON.stringify(logs));
+        }
+      }
+      localStorage.removeItem('loggedInUser');
+      updateAuthLinks();
+      location.reload();
+    };
+
+    updateAuthLinks();
+
+    document.addEventListener('DOMContentLoaded', function() {
+      renderCart();
+    });
+  </script>
+</body>
+</html> 

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Login Report - MOS Burgers</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { background: linear-gradient(135deg,#f1faee 60%,#fff 100%); min-height: 100vh; }
+    .logins-container {
+      max-width: 800px;
+      margin: 3rem auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(69,123,157,0.13);
+      padding: 2.5rem 2rem 2rem 2rem;
+    }
+    h1 {
+      color: #e63946;
+      margin-bottom: 2rem;
+      text-align: center;
+      font-size: 2rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1.5rem;
+      background: #f8f9fa;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(69,123,157,0.08);
+    }
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 1.08rem;
+    }
+    th {
+      background: #e63946;
+      color: #fff;
+      font-weight: 600;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .active-status {
+      color: #28a745;
+      font-weight: 700;
+    }
+    .logout-status {
+      color: #888;
+    }
+    @media (max-width: 700px) {
+      .logins-container { padding: 1rem 0.2rem; }
+      th, td { font-size: 0.98rem; padding: 0.5rem 0.4rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="logins-container">
+    <h1><i class="fa fa-user-clock"></i> User Login Report</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Login Time</th>
+          <th>Logout Time</th>
+        </tr>
+      </thead>
+      <tbody id="logins-table-body">
+      </tbody>
+    </table>
+  </div>
+  <script>
+    if (localStorage.getItem('loggedInUser') !== 'admin') {
+      window.location.href = 'index.html';
+    }
+    function formatDT(dt) {
+      if (!dt) return '';
+      const d = new Date(dt);
+      return d.toLocaleString();
+    }
+    function renderLogins() {
+      const logs = JSON.parse(localStorage.getItem('userLogs') || '[]');
+      const tbody = document.getElementById('logins-table-body');
+      tbody.innerHTML = '';
+      if (logs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#888;">No login records found.</td></tr>';
+        return;
+      }
+      logs.slice().reverse().forEach(log => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${log.username}</td>
+          <td>${formatDT(log.login)}</td>
+          <td>${log.logout ? `<span class='logout-status'>${formatDT(log.logout)}</span>` : `<span class='active-status'>Active</span>`}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    renderLogins();
+  </script>
+</body>
+</html> 
