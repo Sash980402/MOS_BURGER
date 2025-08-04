@@ -58,12 +58,33 @@ const menuItems = [
 ];
 
 
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
-let orderDiscount = parseFloat(localStorage.getItem('orderDiscount')) || 0;
+let cart = [];
+let orderDiscount = 0;
+
+// Initialize cart and orderDiscount with error handling
+try {
+  const storedCart = localStorage.getItem('cart');
+  if (storedCart) {
+    cart = JSON.parse(storedCart) || [];
+  }
+  const storedDiscount = localStorage.getItem('orderDiscount');
+  if (storedDiscount) {
+    orderDiscount = parseFloat(storedDiscount) || 0;
+  }
+} catch (error) {
+  console.error('Failed to initialize cart from localStorage:', error);
+  cart = [];
+  orderDiscount = 0;
+}
 
 function saveCart() {
-  localStorage.setItem('cart', JSON.stringify(cart));
-  localStorage.setItem('orderDiscount', orderDiscount);
+  try {
+    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem('orderDiscount', orderDiscount);
+  } catch (error) {
+    console.error('Failed to save cart to localStorage:', error);
+    showNotification('Failed to save cart. Please try again.');
+  }
 }
 
 function showNotification(message) {
@@ -87,10 +108,24 @@ function addToCart(item) {
 
 
 function getMenuItems() {
-  return JSON.parse(localStorage.getItem('menuItems') || 'null') || menuItems;
+  try {
+    const stored = localStorage.getItem('menuItems');
+    if (stored && stored !== 'null') {
+      return JSON.parse(stored) || menuItems;
+    }
+    return menuItems;
+  } catch (error) {
+    console.error('Failed to parse menu items from localStorage:', error);
+    return menuItems;
+  }
 }
 function saveMenuItems(items) {
-  localStorage.setItem('menuItems', JSON.stringify(items));
+  try {
+    localStorage.setItem('menuItems', JSON.stringify(items));
+  } catch (error) {
+    console.error('Failed to save menu items to localStorage:', error);
+    showNotification('Failed to save menu items. Please try again.');
+  }
 }
 
 function renderMenu(filter = '', category = '') {
@@ -129,8 +164,8 @@ function renderMenu(filter = '', category = '') {
     card.innerHTML = `
       <img src="${item.image || 'https://placehold.co/120x120?text=No+Image'}" alt="${item.name}">
       <h3>${item.name}</h3>
-      <div class="price${item.discount ? ' discounted' : ''}">LKR ${item.price.toFixed(2)}</div>
-      ${item.discount ? `<span class="discount-badge">-${item.discount}%</span>` : ''}
+      <div class="price${item.discount ? ' discounted' : ''}">LKR ${(parseFloat(item.price) || 0).toFixed(2)}</div>
+      ${item.discount ? `<span class="discount-badge">-${parseFloat(item.discount) || 0}%</span>` : ''}
       <p style="margin:0.2rem 0 0.5rem 0;"><strong>Code:</strong> ${item.code}</p>
       <p style="margin:0.2rem 0 0.5rem 0;"><strong>Category:</strong> ${item.category}</p>
       <div class="menu-actions">
@@ -310,8 +345,22 @@ function renderCart() {
   const cartItemsDiv = document.getElementById('cart-items');
   const orderSummaryDiv = document.getElementById('order-summary');
   if (!cartItemsDiv || !orderSummaryDiv) return;
-  cart = JSON.parse(localStorage.getItem('cart')) || [];
-  orderDiscount = parseFloat(localStorage.getItem('orderDiscount')) || 0;
+  
+  // Update cart and orderDiscount from localStorage with error handling
+  try {
+    const storedCart = localStorage.getItem('cart');
+    if (storedCart) {
+      cart = JSON.parse(storedCart) || [];
+    }
+    const storedDiscount = localStorage.getItem('orderDiscount');
+    if (storedDiscount) {
+      orderDiscount = parseFloat(storedDiscount) || 0;
+    }
+  } catch (error) {
+    console.error('Failed to load cart from localStorage:', error);
+    cart = [];
+    orderDiscount = 0;
+  }
   cartItemsDiv.innerHTML = '';
   if (cart.length === 0) {
     cartItemsDiv.innerHTML = `
@@ -329,7 +378,10 @@ function renderCart() {
   }
   let subtotal = 0;
   cart.forEach((item, idx) => {
-    const itemTotal = item.price * item.qty * (1 - (item.discount || 0) / 100);
+    const price = parseFloat(item.price) || 0;
+    const qty = parseInt(item.qty) || 0;
+    const discount = parseFloat(item.discount) || 0;
+    const itemTotal = price * qty * (1 - discount / 100);
     subtotal += itemTotal;
     const card = document.createElement('div');
     card.className = 'cart-item-card';
@@ -338,7 +390,7 @@ function renderCart() {
       <img src="${item.image || 'https://placehold.co/80x80?text=No+Image'}" alt="${item.name}" style="width:80px;height:80px;border-radius:12px;object-fit:cover;">
       <div style="flex-grow:1;">
         <div style="font-size:1.15rem;font-weight:700;color:#1d3557;">${item.name}</div>
-        <div style="font-size:1rem;color:#457b9d;">LKR ${item.price.toFixed(2)}${item.discount?' ('+item.discount+'% off)':''}</div>
+        <div style="font-size:1rem;color:#457b9d;">LKR ${(parseFloat(item.price) || 0).toFixed(2)}${item.discount?' ('+(parseFloat(item.discount) || 0)+'% off)':''}</div>
       </div>
       <div style="display:flex;align-items:center;gap:0.7rem;">
         <button class="qty-btn" data-idx="${idx}" data-op="-1" style="background:linear-gradient(135deg,#e63946 0%,#ffb3c1 100%);color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:1.2rem;cursor:pointer;">-</button>
@@ -379,7 +431,7 @@ function renderCart() {
     };
   });
   
-  const finalAmount = subtotal * (1 - orderDiscount / 100);
+  const finalAmount = subtotal * (1 - (parseFloat(orderDiscount) || 0) / 100);
   orderSummaryDiv.innerHTML = `
     <div class="order-summary-card" style="background:rgba(255,255,255,0.92);backdrop-filter:blur(8px);border-radius:18px;box-shadow:0 4px 24px rgba(69,123,157,0.10);padding:1.5rem;">
       <h2 style="text-align:center;color:#e63946;margin-top:0;margin-bottom:1.5rem;"><i class="fa fa-receipt"></i> Order Summary</h2>
@@ -419,7 +471,7 @@ function renderCart() {
     let val = parseFloat(e.target.value);
     if (isNaN(val) || val < 0) val = 0;
     if (val > 100) val = 100;
-    orderDiscount = val;
+    window.orderDiscount = val;
     saveCart();
     renderCart();
   });
@@ -428,10 +480,20 @@ function renderCart() {
 
 
 function getOrders() {
-  return JSON.parse(localStorage.getItem('orders') || '[]');
+  try {
+    return JSON.parse(localStorage.getItem('orders') || '[]');
+  } catch (error) {
+    console.error('Failed to parse orders from localStorage:', error);
+    return [];
+  }
 }
 function saveOrders(orders) {
-  localStorage.setItem('orders', JSON.stringify(orders));
+  try {
+    localStorage.setItem('orders', JSON.stringify(orders));
+  } catch (error) {
+    console.error('Failed to save orders to localStorage:', error);
+    showNotification('Failed to save order. Please try again.');
+  }
 }
 
 
@@ -510,8 +572,13 @@ function processOrderAndShowReceipt(customer) {
     return;
   }
   const orderDiscount = parseFloat(localStorage.getItem('orderDiscount')) || 0;
-  const orderTotal = cartData.reduce((sum, item) => sum + item.price * item.qty * (1 - (item.discount || 0) / 100), 0);
-  const finalAmount = orderTotal * (1 - orderDiscount / 100);
+  const orderTotal = cartData.reduce((sum, item) => {
+    const price = parseFloat(item.price) || 0;
+    const qty = parseInt(item.qty) || 0;
+    const discount = parseFloat(item.discount) || 0;
+    return sum + price * qty * (1 - discount / 100);
+  }, 0);
+  const finalAmount = orderTotal * (1 - (parseFloat(orderDiscount) || 0) / 100);
   const order = {
     id: 'ORD' + Date.now(),
     customerContact: customer.contact,
@@ -534,7 +601,8 @@ function processOrderAndShowReceipt(customer) {
   localStorage.removeItem('cart');
   localStorage.removeItem('orderDiscount');
   cart = [];
-  orderDiscount = 0;
+  // Fix: Use window.orderDiscount to reference the global variable
+  window.orderDiscount = 0;
   
   if (document.getElementById('cart-items-column')) {
     renderCart();
@@ -557,8 +625,13 @@ function showReceipt(customer) {
   modal.className = 'receipt-modal';
   const cartData = JSON.parse(localStorage.getItem('cart')) || [];
   const orderDiscount = parseFloat(localStorage.getItem('orderDiscount')) || 0;
-  const orderTotal = cartData.reduce((sum, item) => sum + item.price * item.qty * (1 - (item.discount || 0) / 100), 0);
-  const finalAmount = orderTotal * (1 - orderDiscount / 100);
+  const orderTotal = cartData.reduce((sum, item) => {
+    const price = parseFloat(item.price) || 0;
+    const qty = parseInt(item.qty) || 0;
+    const discount = parseFloat(item.discount) || 0;
+    return sum + price * qty * (1 - discount / 100);
+  }, 0);
+  const finalAmount = orderTotal * (1 - (parseFloat(orderDiscount) || 0) / 100);
   modal.innerHTML = `
     <div class="receipt-content" style="background:linear-gradient(135deg,#fff 60%,#f1faee 100%);border-radius:22px;box-shadow:0 8px 32px rgba(69,123,157,0.13);padding:2.5rem 2.5rem 2rem 2.5rem;max-width:440px;margin:auto;position:relative;color:#1d3557;">
       <div style="display:flex;align-items:center;justify-content:center;margin-bottom:1.2rem;">
@@ -626,10 +699,20 @@ function showReceipt(customer) {
 }
 
 function getCustomers() {
-  return JSON.parse(localStorage.getItem('customers') || '[]');
+  try {
+    return JSON.parse(localStorage.getItem('customers') || '[]');
+  } catch (error) {
+    console.error('Failed to parse customers from localStorage:', error);
+    return [];
+  }
 }
 function saveCustomers(customers) {
-  localStorage.setItem('customers', JSON.stringify(customers));
+  try {
+    localStorage.setItem('customers', JSON.stringify(customers));
+  } catch (error) {
+    console.error('Failed to save customers to localStorage:', error);
+    showNotification('Failed to save customer. Please try again.');
+  }
 }
 function renderCustomers(filter = '') {
   const tbody = document.getElementById('customer-table-body');
