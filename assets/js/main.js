@@ -2,6 +2,10 @@
 
 // JavaScript code for dynamic features will go here. 
 
+function isAdmin() {
+  return localStorage.getItem('loggedInUser') === 'admin';
+}
+
 const menuItems = [
   // Burgers
   { code: 'B1001', name: 'Classic Burger (Large)', category: 'Burgers', price: 750, discount: 0 },
@@ -1939,10 +1943,6 @@ function renderReportsDashboard() {
     exportToCSV('order-history-report.csv', headers, rows);
   });
 
-  function isAdmin() {
-    return localStorage.getItem('loggedInUser') === 'admin';
-  }
-
   document.getElementById('export-pdf-btn')?.addEventListener('click', () => {
     if (!isAdmin()) {
       showNotification('Only administrators can export PDF reports.');
@@ -2071,26 +2071,38 @@ document.addEventListener('DOMContentLoaded', function() {
   function updateCartCountBadge() {
     const cartData = JSON.parse(localStorage.getItem('cart')) || [];
     const count = cartData.reduce((sum, item) => sum + (item.qty || 1), 0);
-    cartCountBadge.textContent = count;
-    floatingCartBtn.style.display = (window.innerWidth <= 900) ? 'flex' : 'none';
+    if (cartCountBadge) {
+      cartCountBadge.textContent = count;
+    }
+    if (floatingCartBtn) {
+      floatingCartBtn.style.display = (window.innerWidth <= 900) ? 'flex' : 'none';
+    }
   }
 
   function openCartModal() {
-    cartModal.style.display = 'block';
-    cartModalOverlay.style.display = 'block';
-    setTimeout(() => { cartModal.classList.add('open'); }, 10);
-    cartModalContent.innerHTML = document.getElementById('order-summary').innerHTML;
+    if (cartModal && cartModalOverlay && cartModalContent) {
+      cartModal.style.display = 'block';
+      cartModalOverlay.style.display = 'block';
+      setTimeout(() => { cartModal.classList.add('open'); }, 10);
+      const orderSummary = document.getElementById('order-summary');
+      if (orderSummary) {
+        cartModalContent.innerHTML = orderSummary.innerHTML;
+      }
+    }
   }
   function closeCartModal() {
-    cartModal.classList.remove('open');
-    setTimeout(() => {
-      cartModal.style.display = 'none';
-      cartModalOverlay.style.display = 'none';
-    }, 250);
+    if (cartModal && cartModalOverlay) {
+      cartModal.classList.remove('open');
+      setTimeout(() => {
+        cartModal.style.display = 'none';
+        cartModalOverlay.style.display = 'none';
+      }, 250);
+    }
   }
   if (floatingCartBtn) floatingCartBtn.onclick = openCartModal;
   if (cartModalOverlay) cartModalOverlay.onclick = closeCartModal;
-  if (document.getElementById('close-cart-modal')) document.getElementById('close-cart-modal').onclick = closeCartModal;
+  const closeCartModalBtn = document.getElementById('close-cart-modal');
+  if (closeCartModalBtn) closeCartModalBtn.onclick = closeCartModal;
   window.addEventListener('resize', updateCartCountBadge);
   updateCartCountBadge();
   const origSaveCart = saveCart;
@@ -2102,8 +2114,11 @@ document.addEventListener('DOMContentLoaded', function() {
   renderCart = function() {
     origRenderCart.apply(this, arguments);
     updateCartCountBadge();
-    if (window.innerWidth <= 900 && cartModal.classList.contains('open')) {
-      cartModalContent.innerHTML = document.getElementById('order-summary').innerHTML;
+    if (window.innerWidth <= 900 && cartModal && cartModal.classList.contains('open') && cartModalContent) {
+      const orderSummary = document.getElementById('order-summary');
+      if (orderSummary) {
+        cartModalContent.innerHTML = orderSummary.innerHTML;
+      }
     }
   };
 });
